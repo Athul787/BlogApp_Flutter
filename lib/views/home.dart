@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_proj/services/crud.dart';
 import 'package:flutter_proj/views/create_blog.dart';
@@ -16,24 +17,35 @@ class _HomePageState extends State<HomePage> {
   CrudMethods crudMethods = new CrudMethods();
 
   //QuerySnapshot? blogsSnapshot;
-  QuerySnapshot? blogsSnapshot;
+  Stream? blogsStream;
   Widget BlogsList(){
     return Container(
-        child: blogsSnapshot!=null?
+        child: blogsStream!=null?
 
         ListView(
             children: [
 
-            ListView.builder(
+              StreamBuilder(
+                  stream: blogsStream,
+                  builder: (context,AsyncSnapshot snapshot){
 
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                itemCount: blogsSnapshot!.docs.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context,index){
-                  return BlogsTile(imgUrl: blogsSnapshot!.docs[index]["imgUrl"], title: blogsSnapshot!.docs[index]["title"], description: blogsSnapshot!.docs[index]["desc"], authorName: blogsSnapshot!.docs[index]["authorName"]);
-                }
-            )
+
+
+                return snapshot.data!=null? ListView.builder(
+
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: snapshot.data.docs.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context,index){
+
+                      return BlogsTile(imgUrl: snapshot.data.docs[index]["imgUrl"], title: snapshot.data.docs[index]["title"], description: snapshot.data.docs[index]["desc"], authorName: snapshot.data.docs[index]["authorName"]);
+                    }
+                ):Container(
+                  child: Text("NULL"),
+                );
+              })
+
           ],)
         :Container(
         alignment: Alignment.center,
@@ -45,11 +57,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
 
     crudMethods.getData().then((result){
-      blogsSnapshot=result;
+      setState((){
+        blogsStream=result;
+      });
+
     });
+    super.initState();
+
+
   }
 
   @override
@@ -100,7 +117,7 @@ class BlogsTile extends StatelessWidget {
       child: Stack(children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: Image.network(imgUrl!,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,)),
+            child: CachedNetworkImage(imageUrl: imgUrl!,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,)),
         Container(
           height: 170,
           decoration: BoxDecoration(
