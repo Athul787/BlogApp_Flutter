@@ -2,12 +2,15 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage ;
 import 'package:flutter/material.dart';
 import 'package:flutter_proj/services/crud.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 import 'package:path/path.dart' as Path;
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 
 
@@ -19,7 +22,8 @@ class CreateBlog extends StatefulWidget {
 }
 
 class _CreateBlogState extends State<CreateBlog> {
-  late String authorName, title,desc;
+  late String authorName, title,desc,createdTime,Identi,uniqueId;
+
 
   firebase_storage.FirebaseStorage storage=firebase_storage.FirebaseStorage.instance;
 
@@ -90,11 +94,12 @@ class _CreateBlogState extends State<CreateBlog> {
              _isLoading=true;
     });
     final fileName = Path.basename(selectedImage!.path);
-    final destination = 'files/$fileName';
+    final destination = 'BlogFiles/$fileName';
+    uniqueId=randomAlphaNumeric(9);
 
     try {
-      final ref = firebase_storage.FirebaseStorage.instance.ref().child("blogImages").child("${randomAlphaNumeric(9)}.jpg");
-
+      //final ref = firebase_storage.FirebaseStorage.instance.ref().child("blogImages").child("${randomAlphaNumeric(9)}.jpg");
+      final ref = firebase_storage.FirebaseStorage.instance.ref().child(destination);
       //await ref.putFile(selectedImage!);
       final task=ref.putFile(selectedImage!);
       var downloadUrl=await(await task).ref.getDownloadURL();
@@ -105,8 +110,11 @@ class _CreateBlogState extends State<CreateBlog> {
         "authorName":authorName,
         "title":title,
         "desc":desc,
+        "createdTime": createdTime,
+        "Identity": Identi,
+        "uniqueId":uniqueId
       };
-      crudMethods.addData(blogMap).then((result){
+      crudMethods.addData(blogMap,uniqueId).then((result){
         Navigator.pop(context);
       });
 
@@ -135,6 +143,12 @@ class _CreateBlogState extends State<CreateBlog> {
         actions: [
           GestureDetector(
             onTap: (){
+              createdTime=Timestamp.now().toString();
+              final firebaseUser=FirebaseAuth.instance.currentUser;
+              if(firebaseUser!=null){
+
+              Identi=firebaseUser.uid;}
+
               uploadBlog();
     },
             child: Container(

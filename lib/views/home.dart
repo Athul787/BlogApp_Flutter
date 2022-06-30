@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_proj/screens/signin.dart';
 import 'package:flutter_proj/services/crud.dart';
 import 'package:flutter_proj/views/create_blog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_proj/views/myblogs.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,6 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   CrudMethods crudMethods = new CrudMethods();
+String? userName;
+//String? username;
 
   //QuerySnapshot? blogsSnapshot;
   Stream? blogsStream;
@@ -57,7 +62,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-
+    // crudMethods.getUserData().then((value){
+    //   setState((){
+    //     username=value[1];
+    //     print(value[0]);
+    //   });
+    //
+    // });
     crudMethods.getData().then((result){
       setState((){
         blogsStream=result;
@@ -84,6 +95,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
+
       body: BlogsList(),
       floatingActionButton: Container(
         padding: EdgeInsets.symmetric(vertical: 20),
@@ -96,8 +108,83 @@ class _HomePageState extends State<HomePage> {
           child: Icon(Icons.add))
         ],),
       ),
+      drawer: Drawer(
+
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+
+            DrawerHeader(
+
+              decoration: BoxDecoration(
+                color: Colors.blue,
+
+              ),
+                child:
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(50.0),
+
+
+                  child: FutureBuilder(
+
+                    future: _fetch(),
+                    builder: (context,snapshot){
+                      if(snapshot.connectionState!=ConnectionState.done)
+                        return Text("loading.");
+                      return Text(userName!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20
+                      ),);
+
+
+
+                    },
+
+                  ),
+
+                ),
+
+
+
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.home,
+              ),
+              title: const Text('My Blogs'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MyBlogPage()));
+               // Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.logout,
+              ),
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+
+              },
+            ),
+          ],
+        ),
+      ),
 
     );
+  }
+  _fetch() async{
+    final firebaseUser=await FirebaseAuth.instance.currentUser;
+    if(firebaseUser!=null)
+      await FirebaseFirestore.instance.collection('users').doc(firebaseUser.uid).get().then((ds){
+        userName=ds.data()!['userId'];
+        print(userName);
+      }).catchError((e){
+        print(e);
+      });
   }
 }
 
@@ -140,5 +227,7 @@ class BlogsTile extends StatelessWidget {
         ],),)
       ],),
     );
+
+
   }
 }
