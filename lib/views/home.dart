@@ -86,11 +86,12 @@ String? userName;
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children:[
-          Text("Flutter",style: TextStyle(
+          Text("Blog",style: TextStyle(
             fontSize: 22
           ),),
-          Text("Blog",style: TextStyle(fontSize: 22,color: Colors.blue),)
+          Text("App",style: TextStyle(fontSize: 22,color: Colors.tealAccent[700]),)
         ],),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -118,7 +119,7 @@ String? userName;
             DrawerHeader(
 
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.tealAccent[700],
 
               ),
                 child:
@@ -136,7 +137,7 @@ String? userName;
                       return Text(userName!,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20
+                        fontSize: 30
                       ),);
 
 
@@ -204,11 +205,11 @@ class BlogsTile extends StatelessWidget {
       child: Stack(children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: CachedNetworkImage(imageUrl: imgUrl!,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,)),
+            child: CachedNetworkImage(imageUrl: imgUrl!,fit: BoxFit.fill,width: MediaQuery.of(context).size.width,)),
         Container(
           height: 170,
           decoration: BoxDecoration(
-            color: Colors.black45.withOpacity(0.5),
+            color: Colors.black45.withOpacity(0.2),
             borderRadius: BorderRadius.circular(6),
           ),
         ),

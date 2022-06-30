@@ -133,10 +133,10 @@ class _CreateBlogState extends State<CreateBlog> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children:[
-            Text("Flutter",style: TextStyle(
+            Text("Blog",style: TextStyle(
                 fontSize: 22
             ),),
-            Text("Blog",style: TextStyle(fontSize: 22,color: Colors.blue),)
+            Text("App",style: TextStyle(fontSize: 22,color: Colors.tealAccent[700]),)
           ],),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -183,7 +183,7 @@ class _CreateBlogState extends State<CreateBlog> {
             margin: EdgeInsets.symmetric(horizontal:16),
             height: 150,
             decoration:BoxDecoration(
-              color: Colors.white, borderRadius:  BorderRadius.circular(6),
+              color: Colors.tealAccent[700], borderRadius:  BorderRadius.circular(6),
             ),
               width: MediaQuery.of(context).size.width,
           child: Icon(Icons.add_a_photo,color: Colors.black45,),),

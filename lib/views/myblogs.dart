@@ -121,11 +121,11 @@ class BlogsTile extends StatelessWidget {
 
           ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: CachedNetworkImage(imageUrl: imgUrl!,fit: BoxFit.cover,width: MediaQuery.of(context).size.width,)),
+              child: CachedNetworkImage(imageUrl: imgUrl!,fit: BoxFit.fill,width: MediaQuery.of(context).size.width,)),
           Container(
             height: 170,
             decoration: BoxDecoration(
-              color: Colors.black45.withOpacity(0.5),
+              color: Colors.black45.withOpacity(0.3),
               borderRadius: BorderRadius.circular(6),
             ),
           ),
